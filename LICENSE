@@ -1,0 +1,14 @@
+Evidence files in this repository are released under CC BY 4.0.
+
+The reference transcripts inside eval/SUMMARY_full_v2base.json and
+eval/SUMMARY_full_v3pruned.json are derived from the Google FLEURS dataset
+(CC BY 4.0), https://huggingface.co/datasets/google/fleurs. No FLEURS audio is
+redistributed here.
+
+Attribution:
+  FLEURS: Google Research, https://huggingface.co/datasets/google/fleurs  (CC BY 4.0)
+  iTantra evidence, Smart India Hackathon 2026, problem statement SIH26173,
+  team B.J.P (Bug Janta Party).
+
+These are measurement outputs. The recognition and speech models themselves are
+NOT distributed here and are not covered by this licence.
