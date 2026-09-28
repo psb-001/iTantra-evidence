@@ -1,0 +1,8 @@
+iTantra : PIPE === full speaker pipeline test ===
+iTantra : PIPE bench/bench_00_en.wav: 12.64s audio -> 3 segments before flush, 3 after (+0 from flush)
+iTantra : PIPE   seg0 6.94s 830ms send=true script=1.00 packet=212B raw="unfortunately standing traffic flow is d"
+iTantra : PIPE   seg1 1.50s 183ms send=true script=1.00 packet=140B raw="one hundred per cent"
+iTantra : PIPE   seg2 0.83s 120ms send=true script=1.00 packet=128B raw="certanty"
+iTantra : PIPE bench/bench_02_hi.wav: 9.36s audio -> 0 segments before flush, 1 after (+1 from flush)
+iTantra : PIPE   seg0 7.67s 908ms send=true script=1.00 packet=275B raw="कीन मार्ग को एक हाइकिं लंबी पैदल यात्रा "
+iTantra : PIPE === done ===
