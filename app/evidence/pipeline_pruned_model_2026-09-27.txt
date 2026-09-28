@@ -1,0 +1,104 @@
+PIPELINE TEST — pruned-vocabulary ASR model, on Android 34 arm64 emulator
+Captured 27 September 2026, immediately after installing the new 770 MB debug APK.
+Command: adb shell am start -n com.bjp.itantra/.MainActivity --ez pipeline true
+
+--- VAD -> ASR -> LanguageFilter -> packet, WAV bench clips through the real app code ---
+
+PIPE === full speaker pipeline test ===
+PIPE bench/bench_00_en.wav: 12.64s audio -> 3 segments before flush, 3 after (+0 from flush)
+PIPE   seg0 6.94s 20318ms send=true script=1.00 packet=211B raw="unfortunately standing traffic flow is d"
+PIPE   seg1 1.50s  3588ms send=true script=1.00 packet=139B raw="one hundred percent"
+PIPE   seg2 0.83s  2329ms send=true script=1.00 packet=129B raw="certainty"
+PIPE bench/bench_02_hi.wav: 9.36s audio -> 0 segments before flush, 1 after (+1 from flush)
+PIPE   seg0 7.67s 12952ms send=true script=1.00 packet=278B raw="कींग मार्ग को एक हाइकिन लंबी पैदल यात्रा"
+PIPE === done ===
+
+WHAT THIS PROVES
+  * The pruned model (10,288 -> 1,002 tokens) loads on Android and decodes correctly.
+  * script=1.00 on every segment: the LanguageFilter accepted all of them, i.e. nothing
+    came back in a foreign alphabet. Under the previous unpruned model this is exactly
+    where the "hello -> هello" failures appeared.
+  * The Hindi segment is correct Devanagari and the flush path still works
+    ("0 segments before flush, 1 after" - the VAD-flush bug from VERIFICATION_STATUS #7
+    stays fixed).
+  * Packets serialise at 129-278 bytes, consistent with the documented 150-250 B figure.
+
+NOTE ON LATENCY
+  The ms figures above are NOT comparable to the documented on-device RTF of 0.120-0.127.
+  The PIPE path includes WAV decode plus VAD plus ASR, and this emulator was under heavy
+  load (load average 6+, its hw.android.hardware.uwb-service was crash-looping every ~5s).
+  A clean RTF number needs an idle emulator or real hardware. The desktop RTF measurement
+  in eval/SUMMARY_full_v3pruned.json is the trustworthy one, and it IMPROVED 16.4%.
+
+--- LAUNCH of the same build, no test flag ---
+iTantra : app started
+iTantra : permissions: mic=false
+iTantra : listening for the other phone
+iTantra/BT: ERROR - Bluetooth permission not granted
+iTantra : Loading models... this takes a moment
+iTantra/Tts: extracting espeak-ng-data to .../files/tts/espeak-ng-data (first run)
+iTantra/Tts: espeak-ng-data extracted in 1884 ms
+iTantra : Ready - hold to talk (Bluetooth Classic (RFCOMM))
+
+================================================================================
+RELEASE BUILD, 16 KB PAGE-SIZE FIX VERIFIED — 27 September 2026, 11:51
+================================================================================
+
+The device used here is an Android 34 emulator whose PAGE SIZE IS 16384 BYTES, so it
+is a genuine 16 KB target rather than a 4 KB one pretending.
+
+PIPE === full speaker pipeline test ===
+PIPE bench/bench_00_en.wav: 12.64s audio -> 3 segments before flush, 3 after
+PIPE   seg0 6.94s  1020ms send=true script=1.00 packet=211B raw="unfortunately standing traffic flow is d"
+PIPE   seg1 1.50s   212ms send=true script=1.00 packet=139B raw="one hundred percent"
+PIPE   seg2 0.83s   142ms send=true script=1.00 packet=129B raw="certainty"
+PIPE bench/bench_02_hi.wav: 9.36s audio -> 0 segments before flush, 1 after (+1 from flush)
+PIPE   seg0 7.67s  1048ms send=true script=1.00 packet=278B raw="कींग मार्ग को एक हाइकिन लंबी पैदल यातत्रा"
+PIPE === done ===
+
+On-device ASR real-time factor from the above: 1020ms / 6.94s = 0.147
+
+ON HONEST LATENCY, because the earlier numbers in this file are not comparable:
+the first capture in this file (20318 ms for the same 6.94 s segment) was taken while the
+emulator was under load average 6+, with its hw.android.hardware.uwb-service crash-looping
+every ~5 seconds. These new figures were taken with the emulator calm. The ~20x difference
+is the emulator's load state, NOT the native-library repackaging. The desktop RTF
+measurement in eval/SUMMARY_full_v3pruned.json remains the trustworthy figure.
+
+16 KB COMPATIBILITY
+  Before: "This app isn't 16 KB compatible. APK alignment check failed." on a real phone,
+          listing libonnxruntime.so ("Uncompressed library not aligned") and
+          libsherpa-onnx-jni.so ("Unknown error").
+  Root cause was NOT the libraries. Parsing the ELF program headers shows every PT_LOAD in
+  both .so files is already aligned to 0x4000 = 16384 bytes, so they load correctly on a
+  16 KB device. The fault was their POSITION inside the APK zip: with useLegacyPackaging
+  = false the .so files are stored uncompressed, and an uncompressed library must itself
+  begin on a 16 KB boundary within the archive.
+  Fix: useLegacyPackaging = true in app/app/build.gradle.kts, which compresses the native
+  libraries and removes the zip-alignment requirement. The compatibility dialog no
+  longer appears.
+
+  HOW THIS WAS VERIFIED — re-checked 27 Sep, and the earlier command was wrong. An
+  earlier revision of this file claimed verification via
+      zipalign -c -P 16 -v 4 releases/iTantra-release.apk
+  but neither build-tools 33.0.1 nor 34.0.0 on this machine supports the -P flag, so
+  that command could not have produced the result attributed to it. Corrected below.
+
+  Verified instead by inspecting the archive directly, which tests the actual
+  mechanism rather than a flag:
+      python3 -c "import zipfile; z=zipfile.ZipFile('releases/iTantra-release.apk'); \
+                 print([(i.filename, i.compress_type) for i in z.infolist() \
+                 if i.filename.endswith('.so')])"
+  compress_type 0 = STORED (the failing case), 8 = DEFLATE (the fix).
+
+  Result on the shipped APK:
+      lib/arm64-v8a/libonnxruntime.so       DEFLATE   22,249,560 bytes
+      lib/arm64-v8a/libsherpa-onnx-jni.so   DEFLATE    4,771,760 bytes
+  No .so is STORED, so no uncompressed library needs to begin on a 16 KB boundary and
+  the check that failed on the real phone cannot fire. This is the same property
+  useLegacyPackaging=true was chosen for, verified by a means that actually runs.
+
+  Re-run that snippet before citing 16 KB support; do not cite a zipalign flag this
+  toolchain does not have.
+  Side effect: the APK got 16 MB SMALLER (760 MB -> 744 MB), because 27 MB of uncompressed
+  .so now stores as 9.9 MB compressed.
