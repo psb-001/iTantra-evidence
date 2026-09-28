@@ -1,0 +1,18 @@
+iTantra : LOOP === loopback test: speaker side then listener side ===
+iTantra : LOOP bench/bench_00_en.wav seg0 SENT 212 B "unfortunately standing traffic flow "
+iTantra : LOOP   TTS 380 ms -> 109083 samples (4.95 s @ 22050 Hz)
+iTantra : LOOP   playback started mode=NORMAL isPlaying=true
+iTantra : LOOP   seg0 COMPLETE
+iTantra : LOOP bench/bench_00_en.wav seg1 SENT 140 B "one hundred per cent"
+iTantra : LOOP   TTS 93 ms -> 30976 samples (1.40 s @ 22050 Hz)
+iTantra : LOOP   playback started mode=NORMAL isPlaying=true
+iTantra : LOOP   seg1 COMPLETE
+iTantra : LOOP bench/bench_00_en.wav seg2 SENT 128 B "certanty"
+iTantra : LOOP   TTS 49 ms -> 16128 samples (0.73 s @ 22050 Hz)
+iTantra : LOOP   playback started mode=NORMAL isPlaying=true
+iTantra : LOOP   seg2 COMPLETE
+iTantra : LOOP bench/bench_02_hi.wav seg0 SENT 275 B "कीन मार्ग को एक हाइकिं लंबी पैदल यात"
+iTantra : LOOP   TTS 253 ms -> 87142 samples (3.95 s @ 22050 Hz)
+iTantra : LOOP   playback started mode=ALERT isPlaying=true
+iTantra : LOOP   seg0 COMPLETE
+iTantra : LOOP === done ===
