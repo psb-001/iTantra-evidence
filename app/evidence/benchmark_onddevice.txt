@@ -1,0 +1,19 @@
+iTantra : BENCH === on-device latency benchmark ===
+iTantra : BENCH device: Google sdk_gphone64_arm64 / arm64-v8a
+iTantra : BENCH ASR model load: 1361 ms
+iTantra : BENCH ASR bench_00_en.wav dur=12.64s median=1669ms min=1635ms max=1877ms RTF=0.1320
+iTantra : BENCH   text: unfortunately standing traffic flow is difficult because driver behavi
+iTantra : BENCH ASR bench_01_en.wav dur=7.92s median=955ms min=952ms max=959ms RTF=0.1206
+iTantra : BENCH   text: unfortunately studying traffic vow is difficult because driver behavio
+iTantra : BENCH ASR bench_02_hi.wav dur=9.36s median=1164ms min=1162ms max=1193ms RTF=0.1244
+iTantra : BENCH   text: स्कींग मार्ग को एक हाइकिं लंबी पैदल यात्रा मार्ग जैसा ही सोचे
+iTantra : BENCH ASR TOTAL audio=29.92s compute=3.79s RTF=0.1266
+iTantra/Tts: espeak-ng-data already extracted at /storage/emulated/0/Android/data/com.bjp.itantra/files/tts/espeak-ng-data
+iTantra : BENCH TTS voice load: 630 ms  sampleRate=22050
+iTantra : BENCH TTS synth=196ms audio=3.27s RTF=0.0599
+iTantra : BENCH TTS synth=193ms audio=3.41s RTF=0.0565
+iTantra : BENCH TTS synth=187ms audio=3.31s RTF=0.0565
+iTantra : BENCH TTS TOTAL speech=3.33s RTF=0.0576
+iTantra : BENCH native heap: start=5MB end=23MB
+iTantra : BENCH java heap: max=192MB total=8MB
+iTantra : BENCH === done ===
