@@ -1,0 +1,8 @@
+FontLog : Package com.bjp.itantra has no metadata [CONTEXT service_id=132 ]
+SQLiteLog: (28) double-quoted string literal: "com.bjp.itantra"
+iTantra : app started
+iTantra : permissions: mic=true
+iTantra/BT: ERROR — no paired device — pair the two phones in Android Settings first
+iTantra : ERROR — no paired device — pair the two phones in Android Settings first
+iTantra : Loading models… this takes a moment
+iTantra : Ready. SPEAKER mode — Bluetooth Classic (RFCOMM)
